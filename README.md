@@ -1,102 +1,89 @@
-# **Async Logger with File Rotation**  
+**Async Logger with File Rotation**  
 
-**Асинхронный логгер с ротацией файлов и фильтрацией сообщений**  
+This is an asynchronous logger with file rotation and message filtering. The logger writes messages to files with support for different log levels (INFO, WARNING, ERROR), automatically creates new files when the maximum size is reached, and operates asynchronously.  
 
-Логгер записывает сообщения в файлы с поддержкой уровней логирования (`INFO`, `WARNING`, `ERROR`), автоматически создает новые файлы при достижении максимального размера и работает в асинхронном режиме.  
+**Key Features**  
+- **Multithreading** – Logs are written in a separate thread without blocking the main program.  
+- **Log Rotation** – Automatically creates new log files when the size limit is exceeded.  
+- **Message Filtering** – Only logs messages of the specified level (e.g., only ERROR).  
+- **JSON Configuration** – Supports configuration via a JSON file for log directory, max file size, and log level.  
+- **STL Only** – Uses only C++17 standard libraries (`<filesystem>`, `<thread>`, `<mutex>`) with no external dependencies.  
 
-## **📌 Особенности**  
-✔ **Многопоточность** – запись логов в отдельном потоке без блокировки основного.  
-✔ **Ротация логов** – автоматическое создание новых файлов при превышении лимита размера.  
-✔ **Фильтрация сообщений** – вывод только нужных уровней (например, только `ERROR`).  
-✔ **Конфигурация через JSON** – настройка пути, размера файла и уровня логирования.  
-✔ **STL без сторонних библиотек** – только стандартные средства C++17 (`<filesystem>`, `<thread>`, `<mutex>`).  
+**Build and Run**  
 
----
+**Requirements**  
+- A C++17-compatible compiler (g++, clang, MSVC).  
+- CMake (optional, for easier build setup).  
 
-## **🚀 Сборка и запуск**  
-
-### **Требования**  
-- Компилятор с поддержкой C++17 (`g++`, `clang`, MSVC).  
-- CMake (опционально, для удобной сборки).  
-
-### **Сборка вручную**  
+**Manual Build**  
 ```sh
-g++ -std=c++17 -pthread logger.cpp main.cpp -o logger
-./logger
-```
+g++ -std=c++17 -pthread logger.cpp main.cpp -o logger  
+./logger  
+```  
 
-### **Сборка через CMake**  
-1. Создайте `CMakeLists.txt`:  
+**CMake Build**  
+1. Create a `CMakeLists.txt` file:  
 ```cmake
-cmake_minimum_required(VERSION 3.10)
-project(AsyncLogger)
+cmake_minimum_required(VERSION 3.10)  
+project(AsyncLogger)  
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)  
 
-add_executable(logger logger.cpp main.cpp)
-target_link_libraries(logger pthread)
-```
+add_executable(logger logger.cpp main.cpp)  
+target_link_libraries(logger pthread)  
+```  
 
-2. Соберите и запустите:  
+2. Build and run:  
 ```sh
-mkdir build && cd build
-cmake ..
-make
-./logger
-```
+mkdir build && cd build  
+cmake ..  
+make  
+./logger  
+```  
 
----
-
-## **⚙ Конфигурация**  
-Создайте файл `logger_config.json` в той же директории:  
+**Configuration**  
+Create a `logger_config.json` file in the same directory:  
 ```json
 {
-    "logDir": "logs",
-    "maxFileSize": 1048576,
-    "minLogLevel": "INFO"
-}
-```
-- `logDir` – папка для хранения логов (если не существует, создается автоматически).  
-- `maxFileSize` – максимальный размер файла в байтах (по умолчанию 1 МБ).  
-- `minLogLevel` – минимальный уровень логирования (`INFO`, `WARNING`, `ERROR`).  
+    "logDir": "logs",  
+    "maxFileSize": 1048576,  
+    "minLogLevel": "INFO"  
+}  
+```  
+- `logDir` – Directory for storing log files (created automatically if it doesn't exist).  
+- `maxFileSize` – Maximum log file size in bytes (default: 1 MB).  
+- `minLogLevel` – Minimum log level (INFO, WARNING, ERROR).  
 
----
-
-## **📝 Пример использования**  
+**Example Usage**  
 ```cpp
-#include "logger.h"
-#include <thread>
+#include "logger.h"  
+#include <thread>  
 
-int main() {
-    Logger logger("logger_config.json");
+int main() {  
+    Logger logger("logger_config.json");  
 
-    logger.log(LogLevel::INFO, "Приложение запущено");
-    logger.log(LogLevel::WARNING, "Нехватка памяти");
-    logger.log(LogLevel::ERROR, "Ошибка подключения к БД");
+    logger.log(LogLevel::INFO, "Application started");  
+    logger.log(LogLevel::WARNING, "Low memory warning");  
+    logger.log(LogLevel::ERROR, "Database connection error");  
 
-    // Имитация работы приложения
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(1));  
 
-    logger.stop(); // Корректное завершение
-    return 0;
-}
+    logger.stop(); // Proper shutdown  
+    return 0;  
+}  
+```  
+
+**Project Structure**  
 ```
+CMakeLists.txt          # CMake configuration  
+logger_config.json      # Logger settings  
+logger.h                # Header file  
+logger.cpp              # Logger implementation  
+main.cpp                # Example usage  
+```  
 
----
-
-## **📂 Структура проекта**  
-```
-├── CMakeLists.txt          # Конфигурация CMake
-├── logger_config.json      # Настройки логгера
-├── logger.h                # Заголовочный файл
-├── logger.cpp              # Реализация логгера
-└── main.cpp                # Пример использования
-```
-
----
-
-## **📌 Возможные улучшения**  
-🔹 **Добавить тесты** (Google Test).  
-🔹 **Реализовать нормальный JSON-парсинг** (например, через `nlohmann/json`).  
-🔹 **Добавить сетевую отправку логов** (например, через UDP/TCP).  
-🔹 **Поддержка Unicode** (для кириллицы и других языков).  
+**Possible Improvements**  
+- Add unit tests (e.g., Google Test).  
+- Implement proper JSON parsing (e.g., using nlohmann/json).  
+- Add network logging support (UDP/TCP).  
+- Improve Unicode support (for Cyrillic and other languages).
